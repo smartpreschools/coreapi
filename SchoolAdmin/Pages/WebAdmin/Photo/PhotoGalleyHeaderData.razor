@@ -1,0 +1,108 @@
+﻿@page "/PhotoGalleyHeaderData"
+@using SchoolAdmin.Data
+@inject HttpClient Http
+<br />
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- left column -->
+            <div class="col-md-12">
+                <!-- general form elements -->
+                <div class="card card-secondary">
+                    <div class="card-header">
+                        <h3 class="card-title"> Photo Gallery Header</h3>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12 text-right">
+                                <a href='/PhotoGalleryHeader' class="btn btn-warning" role="button">
+                                    <i class="fas fa-user-plus"></i>
+                                    Add
+                                </a>
+                            </div>
+                        </div><br />
+                        <div class="row">
+                            <div class="col-sm-12">
+                                @if (PhotoGalleryHeaderList == null)
+                                {
+                                    <p><em>Loading...</em></p>
+                                }
+                                else
+                                {
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Function Name</th>
+                                                <th>Description</th>
+                                                <th>Status</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var function in PhotoGalleryHeaderList)
+                                            {
+                                                <tr>
+                                                    <td>@function.FunctionName</td>
+                                                    <td>@function.FunctionDescription</td>
+                                                    <td>@function.IsStatus</td>
+                                                    <td>
+                                                        <a href='/PhotoGalleryHeader/edit/@function.Id' class="link-dark" role="button">
+                                                            Edit
+                                                        </a>
+                                                        <a href='/PhotoGalleryHeader/delete/@function.Id' class="link-danger" role="button">
+                                                            Delete
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                }
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@code {
+    protected List<PhotoGalleryHeader> PhotoGalleryHeaderList = new();
+    protected List<PhotoGalleryHeader> searchPhotoGalleryHeaderData = new();
+    protected PhotoGalleryHeader photoGalleryHeader = new();
+    protected string SearchString { get; set; } = string.Empty;
+    protected override async Task OnInitializedAsync()
+    {
+        await GetUser();
+    }
+    protected async Task GetUser()
+    {
+        PhotoGalleryHeaderList = new List<PhotoGalleryHeader>();//await Http.GetFromJsonAsync<List<PhotoGalleryHeader>>("api/User");
+        searchPhotoGalleryHeaderData = PhotoGalleryHeaderList;
+    }
+    protected void FilterUser()
+    {
+        if (!string.IsNullOrEmpty(SearchString))
+        {
+            PhotoGalleryHeaderList = searchPhotoGalleryHeaderData
+                .Where(x => x.FunctionName.IndexOf(SearchString, StringComparison.OrdinalIgnoreCase) != -1)
+                .ToList();
+        }
+        else
+        {
+            PhotoGalleryHeaderList = searchPhotoGalleryHeaderData;
+        }
+    }
+    protected void DeleteConfirm(int? id)
+    {
+        photoGalleryHeader = PhotoGalleryHeaderList.FirstOrDefault(x => x.Id == id);
+    }
+    public void ResetSearch()
+    {
+        SearchString = string.Empty;
+        PhotoGalleryHeaderList = searchPhotoGalleryHeaderData;
+    }
+}

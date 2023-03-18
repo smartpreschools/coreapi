@@ -1,0 +1,110 @@
+﻿@page "/PhotoGalleryDetails"
+@page "/PhotoGalleryDetails/{Id:int}"
+@using SchoolAdmin.Data
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Photo Gallery Details </h1>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- left column -->
+            <div class="col-md-12">
+                <!-- general form elements -->
+                <div class="card card-secondary">
+                    <div class="card-header">
+                        <h3 class="card-title"> Photo Gallery Details</h3>
+                    </div>
+                    <div class="card-body">
+                        <EditForm Model="@photoGalleryDetails" OnValidSubmit="SaveUser">
+                            <DataAnnotationsValidator />
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <label for="Name"> select Function Name</label>
+                                        <InputSelect class="form-control" @bind-Value="photoGalleryDetails.FunctionId" />
+                                        <ValidationMessage For="@(() => photoGalleryDetails.FunctionId)" />
+                                    </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <label>Image Name : <em class="text-danger">*</em> </label>
+                                        <InputText class="form-control" @bind-Value="photoGalleryDetails.ImageName" />
+                                        <ValidationMessage For="@(() => photoGalleryDetails.ImageName)" />
+                                    </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <label>Image Order : <em class="text-danger">*</em> </label>
+                                        <InputNumber class="form-control" @bind-Value="photoGalleryDetails.ImageOrder" />
+                                        <ValidationMessage For="@(() => photoGalleryDetails.ImageOrder)" />
+                                    </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <label>Select Image  : <em class="text-danger">*</em> </label>
+                                       
+                                        <InputFile class="form-control" @bind-Value="photoGalleryDetails.ImageUrl" />
+                                        <ValidationMessage For="@(() => photoGalleryDetails.ImageUrl)" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <label>Description : </label>
+                                        <InputTextArea class="form-control" @bind-Value="photoGalleryDetails.ImageDescription" />
+                                       
+                                    </div>
+                                </div>
+                            </div>
+                            <div >
+                                <button type="submit" class="btn btn-secondary">Save</button>
+                                <button class="btn btn-light" @onclick="Cancel">Cancel</button>
+                            </div>
+                        </EditForm>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    protected string Title = "Add";
+    protected PhotoGalleyDetails photoGalleryDetails = new();
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Id != 0)
+        {
+            Title = "Edit";
+             photoGalleryDetails = new PhotoGalleyDetails();//await Http.GetFromJsonAsync<PhotoGalleryHeader>("api/User/" + Id);
+        }
+    }
+    protected async Task SaveUser()
+    {
+        if (photoGalleryDetails.Id != 0)
+        {
+            await Http.PutAsJsonAsync("api/User", photoGalleryDetails);
+        }
+        else
+        {
+            await Http.PostAsJsonAsync("api/User", photoGalleryDetails);
+        }
+        Cancel();
+    }
+    public void Cancel()
+    {
+        NavigationManager.NavigateTo("/PhotoGalleyDetailsData");
+    }
+}
