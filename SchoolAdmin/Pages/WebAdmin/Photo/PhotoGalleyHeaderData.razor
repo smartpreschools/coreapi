@@ -1,6 +1,7 @@
 ﻿@page "/PhotoGalleyHeaderData"
 @using SchoolAdmin.Data
 @inject HttpClient Http
+@inject IConfiguration Configuration
 <br />
 <section class="content">
     <div class="container-fluid">
@@ -76,11 +77,13 @@
     protected string SearchString { get; set; } = string.Empty;
     protected override async Task OnInitializedAsync()
     {
+        var connectionString = Configuration.GetConnectionString("DefaultConnection");
         await GetUser();
     }
     protected async Task GetUser()
     {
-        PhotoGalleryHeaderList = new List<PhotoGalleryHeader>();//await Http.GetFromJsonAsync<List<PhotoGalleryHeader>>("api/User");
+        PhotoGalleryHeaderList = new List<PhotoGalleryHeader>();
+        await Http.GetFromJsonAsync<List<PhotoGalleryHeader>>("User");
         searchPhotoGalleryHeaderData = PhotoGalleryHeaderList;
     }
     protected void FilterUser()
